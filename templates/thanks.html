@@ -30,6 +30,7 @@
 <form id="commentForm" action="save">
     <textarea name="comments" rows="20" cols="80">&nbsp;</textarea>
     <input type="hidden" name="code" value="{{ code }}"/>
+    <input type="hidden" name="workerId" value="{{ request.args.get('workerId') }}">
     <input type="submit" value="Save comments" />
 </form>
 

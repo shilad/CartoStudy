@@ -22,36 +22,28 @@
 
 <div class="movie-map">
     <img src="{{ url_for('static', filename='images/maps/' + map) }}" />
-    <div class="circle">&nbsp;</div>
+    <div class="circle1">&nbsp;</div>
+    <div class="circle2">&nbsp;</div>
+    <div class="circle3"> </div>
+    <div class="circle4"> </div>
+    <div class="circle5"> </div>
+    <div class="circle6"> </div>
 </div>
 
-<h2>Choose your top three choices for which movie the red dot should represent.</h2>
+<h2>Choose your top choice for which movie the <b>rainbow</b> dot should represent.</h2>
+
+Remember that over the course of this HIT you may see more than one map for some movies and no maps for others.
 
 <form id="answerForm" action="../save/{{ (questionNum) }}">
 <fieldset>
 <label for="firstchoice">Top Choice:</label>
-<select id="firstchoice" name="firstchoice">
-  <option value="none">Choose...</option>
+<select id="firstchoice" name="firstchoice" class="required">
+  <option value="">Choose...</option>
 {% for m in options %}
   <option value="{{ m }}">{{ m }}</option>
 {% endfor %}
 </select>
 
-<label for="secondchoice">Second Choice:</label>
-<select id="secondchoice" name="secondchoice">
-  <option value="none">Choose...</option>
-{% for m in options %}
-  <option value="{{ m }}">{{ m }}</option>
-{% endfor %}
-</select>
-
-<label for="thirdchoice">Third Choice:</label>
-<select id="thirdchoice" name="thirdchoice">
-  <option value="none">Choose...</option>
-{% for m in options %}
-  <option value="{{ m }}">{{ m }}</option>
-{% endfor %}
-</select>
 </fieldset>
 
 <input type="hidden" name="workerId" value="{{ request.args.get('workerId') }}">

@@ -18,8 +18,12 @@
 
 <h1>Movie Relationship Survey</h1>
 <h2>Overview</h2>
-<p>We invite you to participate in a research study that measures how individuals perceive the relationships between movies. This study is open to all internet users over 18 who have watched at least 10 of the movies in our dataset.</p>
-
+    <p>We invite you to participate in a research study that measures how individuals perceive the relationships between movies. This study is open to all internet users over 18 who have <b>watched at least {{ numChoices + 2 }}</b> of the following movies:</p>
+<ul>
+{% for m in movies %}
+  <li>{{ m }}</li>
+{% endfor %}
+</ul>
 <h2>What will my participation involve?</h2>
 <p>Your participation in the study will require approximately 15 minutes. If you decide to participate in this research you will be asked a series of questions about your movie watching habits and history. You will be shown a 2D map with dots representing different movies. Dots that are closer together are more related. You will be asked to label dots with your best guess for the movie that is most related to the others nearby on the map.</p>
 

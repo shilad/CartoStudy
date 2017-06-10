@@ -3,12 +3,14 @@ import json
 import os
 import random
 
+
+import codecs
 import time
 from flask import Flask, request, render_template, redirect, url_for
 
 app = Flask(__name__, static_url_path='/CartoStudy/static')
 
-MOVIES = """Batman v Superman: Dawn of Justice
+MOVIES = u"""Batman v Superman: Dawn of Justice
 Citizen Kane
 Star Trek Beyond
 The Social Network
@@ -40,7 +42,7 @@ The Princess and the Frog
 Bajirao Mastani
 Night of the Living Dead
 Chariots of Fire
-Amélie
+Amelie
 Crimson Peak
 All About Eve
 Beetlejuice
@@ -49,8 +51,14 @@ An Inconvenient Truth
 Close Encounters of the Third Kind
 Dirty Dancing""".split('\n')
 
-VERIFICATION = """The Lord of the Rings: The Fellowship of the Ring
+VERIFICATION = u"""The Lord of the Rings: The Fellowship of the Ring
 Rocky II""".split('\n')
+
+for m in MOVIES:
+    f1 = 'static/images/maps/content/cartoScreenshots-' + m + '.jpg'
+    f2 = 'static/images/maps/nav/cartoScreenshots-' + m + '.jpg'
+    assert os.path.isfile(f1), 'could not find ' + f1
+    assert os.path.isfile(f2), 'could not find ' + f2
 
 def log(ev, info):
     path = 'logs/%s.log' % (os.getpid())
@@ -62,7 +70,7 @@ def log(ev, info):
         json.dumps(info),
         json.dumps(list(request.args.items(multi=True))),
     ]
-    with open(path, 'a') as f:
+    with codecs.open(path, 'a', encoding='utf-8') as f:
         f.write('\t'.join(tokens) + '\n')
 
 
@@ -151,11 +159,11 @@ def getMaps(workerId=None, seenMovies=None):
     for m in VERIFICATION:
         options.remove(m)
 
-    maps = [ ('verification/' + m + '.png') for m in VERIFICATION ]
+    maps = [ ('verification/' + m + '.jpg') for m in VERIFICATION ]
 
     for m in options[:NUM_MAPS]:
-        maps.append('content/cartoScreenshots-' + m + '.png')
-        maps.append('nav/cartoScreenshots-' + m + '.png')
+        maps.append('content/cartoScreenshots-' + m + '.jpg')
+        maps.append('nav/cartoScreenshots-' + m + '.jpg')
 
     assert(len(maps) == NUM_MAPS * 2 + 2)
 
@@ -173,7 +181,7 @@ def index():
 @app.route('/CartoStudy/consent/show')
 def consentShow():
     log('page', 'consent/show')
-    return render_template('consent.html')
+    return render_template('consent.html', movies=sorted(MOVIES + VERIFICATION), numChoices=NUM_CHOICES)
 
 
 @app.route('/CartoStudy/consent/save')
@@ -226,9 +234,7 @@ def mapSave(questionNum):
     options = getOptions()
     log('map',{ 'map' : maps[questionNum],
                 'num' : questionNum,
-                'first' : request.args.get('firstchoice', ''),
-                'second' : request.args.get('secondchoice', ''),
-                'third' : request.args.get('thirdchoice', ''),
+                'first' : request.args.get('firstchoice', '')
                 })
 
     if questionNum + 1 >= NUM_MAPS * 2 + 2:
@@ -239,6 +245,8 @@ def mapSave(questionNum):
 
 @app.route('/CartoStudy/thanks/show')
 def thanksShow():
+    assert(request.args.get('workerId', ''))
+    random.seed(request.args.get('workerId', '') + '_code')
     code = str(random.randint(10000000000, 99999999999))
     log('page', 'thanks/show')
     log('code', code)

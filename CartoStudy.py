@@ -168,34 +168,34 @@ def index():
     return myRedirect(consentShow)
 
 
-@app.route('/consent/show')
+@app.route('/CartoStudy/consent/show')
 def consentShow():
     log('page', 'consent/show')
     return render_template('consent.html')
 
 
-@app.route('/consent/save')
+@app.route('/CartoStudy/consent/save')
 def consentSave():
     assert(request.args.get('workerId', ''))
     log('page', 'consent/save')
     return myRedirect(bioShow)
 
 
-@app.route('/bio/show')
+@app.route('/CartoStudy/bio/show')
 def bioShow():
     assert(request.args.get('workerId', ''))
     log('page', 'bio/show')
     return render_template('biographicaldata.html', movies=sorted(MOVIES + VERIFICATION))
 
 
-@app.route('/bio/save')
+@app.route('/CartoStudy/bio/save')
 def bioSave():
     assert(request.args.get('workerId', ''))
     log('page', 'bio/save')
     return myRedirect(instructions)
 
 
-@app.route('/instructions/show')
+@app.route('/CartoStudy/instructions/show')
 def instructions():
     assert(request.args.get('workerId', ''))
     log('page', 'instructions/show')
@@ -203,7 +203,7 @@ def instructions():
 
 
 
-@app.route('/map/show/<int:questionNum>')
+@app.route('/CartoStudy/map/show/<int:questionNum>')
 def mapShow(questionNum):
     assert(request.args.get('workerId', ''))
     maps = getMaps()
@@ -217,7 +217,7 @@ def mapShow(questionNum):
                            map=maps[questionNum])
 
 
-@app.route('/map/save/<int:questionNum>')
+@app.route('/CartoStudy/map/save/<int:questionNum>')
 def mapSave(questionNum):
     assert(request.args.get('workerId', ''))
     maps = getMaps()
@@ -235,14 +235,14 @@ def mapSave(questionNum):
         return myRedirect(mapShow, questionNum=questionNum+1)
 
 
-@app.route('/thanks/show')
+@app.route('/CartoStudy/thanks/show')
 def thanksShow():
     code = str(random.randint(10000000000, 99999999999))
     log('page', 'thanks/show')
     log('code', code)
     return render_template('thanks.html', code=code)
 
-@app.route('/thanks/save')
+@app.route('/CartoStudy/thanks/save')
 def thanksSaved():
     code = request.args.get('code')
     log('page', 'thanks/save')

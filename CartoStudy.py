@@ -167,6 +167,10 @@ def getMaps(workerId=None, seenMovies=None):
 def index():
     return myRedirect(consentShow)
 
+@app.route('/CartoStudy')
+def index2():
+    return myRedirect(consentShow)
+
 
 @app.route('/CartoStudy/consent/show')
 def consentShow():

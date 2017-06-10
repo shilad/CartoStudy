@@ -4,13 +4,9 @@ import os
 import random
 
 import time
+from flask import Flask, request, render_template, redirect, url_for
 
-from flask import Flask, request, render_template, redirect, url_for, Blueprint
-
-bp = Blueprint('CartoStudy', __name__,
-                        template_folder='templates')
-
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/CartoStudy/static')
 
 MOVIES = """Batman v Superman: Dawn of Justice
 Citizen Kane
@@ -83,7 +79,7 @@ def myRedirect(func, **args):
         args['workerId'] = request.args.get('workerId')
     if request.args.get('seenMovies'):
         args['seenMovies'] = request.args.getlist('seenMovies')
-    return redirect(url_for('CartoStudy.' + func.__name__, **args))
+    return redirect(url_for(func.__name__, **args))
 
 
 def testGetOptions():
@@ -167,38 +163,41 @@ def getMaps(workerId=None, seenMovies=None):
 
     return maps
 
-@bp.route('/')
+@app.route('/')
+@app.route('/CartoStudy')
+@app.route('/CartoStudy/')
 def index():
     return myRedirect(consentShow)
 
-@bp.route('/consent/show')
+
+@app.route('/CartoStudy/consent/show')
 def consentShow():
     log('page', 'consent/show')
     return render_template('consent.html')
 
 
-@bp.route('/consent/save')
+@app.route('/CartoStudy/consent/save')
 def consentSave():
     assert(request.args.get('workerId', ''))
     log('page', 'consent/save')
     return myRedirect(bioShow)
 
 
-@bp.route('/bio/show')
+@app.route('/CartoStudy/bio/show')
 def bioShow():
     assert(request.args.get('workerId', ''))
     log('page', 'bio/show')
     return render_template('biographicaldata.html', movies=sorted(MOVIES + VERIFICATION))
 
 
-@bp.route('/bio/save')
+@app.route('/CartoStudy/bio/save')
 def bioSave():
     assert(request.args.get('workerId', ''))
     log('page', 'bio/save')
     return myRedirect(instructions)
 
 
-@bp.route('/instructions/show')
+@app.route('/CartoStudy/instructions/show')
 def instructions():
     assert(request.args.get('workerId', ''))
     log('page', 'instructions/show')
@@ -206,7 +205,7 @@ def instructions():
 
 
 
-@bp.route('/map/show/<int:questionNum>')
+@app.route('/CartoStudy/map/show/<int:questionNum>')
 def mapShow(questionNum):
     assert(request.args.get('workerId', ''))
     maps = getMaps()
@@ -220,7 +219,7 @@ def mapShow(questionNum):
                            map=maps[questionNum])
 
 
-@bp.route('/map/save/<int:questionNum>')
+@app.route('/CartoStudy/map/save/<int:questionNum>')
 def mapSave(questionNum):
     assert(request.args.get('workerId', ''))
     maps = getMaps()
@@ -238,45 +237,43 @@ def mapSave(questionNum):
         return myRedirect(mapShow, questionNum=questionNum+1)
 
 
-@bp.route('/thanks/show')
+@app.route('/CartoStudy/thanks/show')
 def thanksShow():
     code = str(random.randint(10000000000, 99999999999))
     log('page', 'thanks/show')
     log('code', code)
     return render_template('thanks.html', code=code)
 
-@bp.route('/thanks/save')
+@app.route('/CartoStudy/thanks/save')
 def thanksSaved():
     code = request.args.get('code')
     log('page', 'thanks/save')
     return render_template('thanks_saved.html', code=code)
-#
-#
-# @app.url_defaults
-# def hashed_url_for_static_file(endpoint, values):
-#     if 'static' == endpoint or endpoint.endswith('.static'):
-#         filename = values.get('filename')
-#         if filename:
-#             if '.' in endpoint:  # has higher priority
-#                 blueprint = endpoint.rsplit('.', 1)[0]
-#             else:
-#                 blueprint = request.blueprint  # can be None too
-#
-#             if blueprint:
-#                 static_folder = app.blueprints[blueprint].static_folder
-#             else:
-#                 static_folder = app.static_folder
-#
-#             param_name = 'h'
-#             while param_name in values:
-#                 param_name = '_' + param_name
-#             values[param_name] = static_file_hash(os.path.join(static_folder, filename))
-#
-#
-# def static_file_hash(filename):
-#     return int(os.stat(filename).st_mtime)  # or app.config['last_build_timestamp'] or md5(filename) or etc...
 
-app.register_blueprint(bp, url_prefix='/CartoStudy')
+
+@app.url_defaults
+def hashed_url_for_static_file(endpoint, values):
+    if 'static' == endpoint or endpoint.endswith('.static'):
+        filename = values.get('filename')
+        if filename:
+            if '.' in endpoint:  # has higher priority
+                blueprint = endpoint.rsplit('.', 1)[0]
+            else:
+                blueprint = request.blueprint  # can be None too
+
+            if blueprint:
+                static_folder = app.blueprints[blueprint].static_folder
+            else:
+                static_folder = app.static_folder
+
+            param_name = 'h'
+            while param_name in values:
+                param_name = '_' + param_name
+            values[param_name] = static_file_hash(os.path.join(static_folder, filename))
+
+
+def static_file_hash(filename):
+    return int(os.stat(filename).st_mtime)  # or app.config['last_build_timestamp'] or md5(filename) or etc...
 
 if __name__ == '__main__':
     app.run()

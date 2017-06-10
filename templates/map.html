@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cartograph Survey</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js" integrity="sha256-UOSXsAgYN43P/oVrmU+JlHtiDGYWN2iHnJuKY9WD+Jg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="cartograph">
+
+<h1>Movie Relationship Survey</h1>
+
+<p>The image below shows a map where the city dots represent movies. Movies that are similar or closely related are shown closer together on the map.</p>
+
+<img src="tmpimg.png" />
+
+<h2>Choose your top three choices for which movie the selected dot should represent.</h2>
+
+<form id="answerForm">
+<fieldset>
+<label for="firstchoice">First Choice:</label>
+<select id="firstchoice" name="firstChoice">
+  <option value="none">Choose...</option>
+  <option value="The Rock">The Rock</option>
+  <option value="Die Hard">Die Hard</option>
+</select>
+
+<label for="secondchoice">Second Choice:</label>
+<select id="secondchoice" name="secondchoice">
+  <option value="none">Choose...</option>
+  <option value="The Rock">The Rock</option>
+  <option value="Die Hard">Die Hard</option>
+</select>
+
+<label for="thirdchoice">Third Choice:</label>
+<select id="thirdchoice" name="thirdchoice">
+  <option value="none">Choose...</option>
+  <option value="The Rock">The Rock</option>
+  <option value="Die Hard">Die Hard</option>
+</select>
+</fieldset>
+  
+<input type="submit" value="Continue" />
+</form>
+<script>
+$("#answerForm").validate();
+</script>
+</div>
+</body>
+</html>

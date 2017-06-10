@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cartograph Survey Instructions</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js" integrity="sha256-UOSXsAgYN43P/oVrmU+JlHtiDGYWN2iHnJuKY9WD+Jg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="cartograph">
+
+<h1>Survey Instructions</h1>
+<p>
+    We will show you a series of visualizations of movies like the one below.
+    Each image is a region of a "movie map."
+    Your job is to pick the most likely mystery movie that would appear at the location of the red dot.
+</p>
+
+<div class="movie-map">
+    <img src="{{  url_for('static', filename='images/maps/verification/Example.png') }}">
+    <div class="circle">&nbsp;</div>
+</div>
+
+</p>
+<p>
+    For example, for the map above presume you wiere given the following choices: <it>Hannibal</it>, <it>Bambi</it>, and <it>Mary Poppins</it>.
+    You would select <b>Hannibal</b> because it is a sequel to <it>Silence of the Lambs</it>, which is near the center of the map.
+    We will ask you for your best guess, second guess, and third guess about the mystery movie.</p>
+
+<p>You will be asked to guess about 12 different maps. The movies choices will not change.
+    <b>Some movie choices may be used for more than one map and others choices may not be used at all.</b></p>
+
+
+<form id="instructionForm" action="../map/show">
+
+<input type="hidden" name="assignmentId" value="{{ request.args.get('assignmentId') }}">
+
+{% for m in request.args.getlist('seenMovies') %}
+<input type="hidden" name="seenMovies" value="{{ m }}">
+{% endfor %}
+
+<input type="submit" value="Show me the maps!" />
+</form>
+<script>
+$("#workerIDForm").validate();
+</script>
+</div>
+</body>
+</html>

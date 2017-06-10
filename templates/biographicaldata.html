@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cartograph Survey Background</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js" integrity="sha256-UOSXsAgYN43P/oVrmU+JlHtiDGYWN2iHnJuKY9WD+Jg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="cartograph">
+
+
+
+
+<form id="demographicForm" action="save">
+<fieldset>
+<legend><span class="number">1</span>Background Information</legend>
+<input type="text" name="gender" placeholder="Your Gender *" required>
+<input type="text" name="age" placeholder="Your Age *" required>
+<label for="education">What is your highest education level?</label>
+<select id="education" name="educationlevel" required>
+  <option value="high school">High school G.E.D or equivalent</option>
+  <option value="college credit">Some college credit, no degree</option>
+  <option value="trade">Trade/technical/vocational training</option>
+  <option value="associates">Associate's degree</option>
+  <option value="bachelors">Bachelor's degree</option>
+  <option value="masters">Master's degree</option>
+  <option value="doctorate">Doctorate or professional degree</option>
+  <option value="other">Other</option>
+</select>
+</fieldset>
+
+<fieldset>
+<legend><span class="number">2</span> Movie Information</legend>
+<label for="moviefrequency">How often do you watch movies?</label>
+<select id="moviefrequency" name="Movie Frequency" required>
+  <option value="daily">Every day</option>
+  <option value="weekly">Every week</option>
+  <option value="monthly">Every month</option>
+  <option value="occasionally">Every now and then</option>
+  <option value="never" selected="selected">Never</option>
+</select>
+<input type="text" name="numMovies" placeholder="How many movies do you watch per month on average? *" required>
+
+<label>Which movie genres do you prefer?</label>
+<ul>
+<li><input type="checkbox" name="action" value="action">Action</li>
+<li><input type="checkbox" name="arthouse" value="arthouse">Arthouse</li>
+<li><input type="checkbox" name="comedy" value="comedy">Comedy</li>
+<li><input type="checkbox" name="drama" value="drama">Drama</li>
+<li><input type="checkbox" name="foreign" value="foreign">Foreign Language Film</li>
+<li><input type="checkbox" name="horror" value="horror">Horror</li>
+<li><input type="checkbox" name="romantic" value="romantic">Romance/Romantic-comedy</li>
+<li><input type="checkbox" name="scifi" value="scifi">Science Fiction</li>
+<li><input type="checkbox" name="thriller" value="thriller">Thriller</li>
+<li><input type="checkbox" name="other" value="other">Other</li>
+</ul>
+
+<label>Which of the following movies have you watched?</label>
+<ul>
+
+  {% for movie in movies %}
+    <li><input type="checkbox" name="seenMovies" value="{{ movie }}">{{ movie }}</li>
+  {% endfor %}
+</ul>
+</fieldset>  
+  
+<input type="hidden" name="assignmentId" value="{{ request.args.get('assignmentId') }}">
+
+<input type="submit" value="Continue" />
+</form>
+</div>
+</body>
+</html>

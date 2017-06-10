@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cartograph Survey Consent</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js" integrity="sha256-UOSXsAgYN43P/oVrmU+JlHtiDGYWN2iHnJuKY9WD+Jg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="cartograph">
+
+<h1>Movie Relationship Survey</h1>
+<h2>Overview</h2>
+<p>We invite you to participate in a research study that measures how individuals perceive the relationships between movies. This study is open to all internet users over 18 who have watched at least 10 of the movies in our dataset.</p>
+
+<h2>What will my participation involve?</h2>
+<p>Your participation in the study will require approximately 15 minutes. If you decide to participate in this research you will be asked a series of questions about your movie watching habits and history. You will be shown a 2D map with dots representing different movies. Dots that are closer together are more related. You will be asked to label dots with your best guess for the movie that is most related to the others nearby on the map.</p>
+
+<h2>Principal Investigators:</h2>
+<ul>
+<li>Shilad Sen (ssen@macalester.edu)</li>
+<li>Bret Jackson (bjackson@macalester.edu)</li>
+<li>Brent Hecht (bhecht@cs.umn.edu)</li>
+</ul>
+
+<h2>Are there any risks to me?</h2>
+<p>There are no significant risks associated with this survey. We do not collect any identifying personal information except for your Amazon Worker ID.</p>
+
+<h2>Are there any benefits to me?</h2>
+<p>We don't expect any direct benefits to you from participation in this study.</h2>
+
+<h2>How will my confidentiality be protected?</h2>
+<p>While there will probably be publications as a result of this study, your name will not be used. Only group characteristics will be published.</p>
+
+<h2>Whom should I contact if I have any questions?</h2>
+If you have any questions about the research, you should contact the Principle Investigator Associate Prof. Shilad Sen at ssen@macalester.edu. Your participation is completely voluntary.
+
+<hr>
+
+<form id="workerIDForm" action="save">
+<fieldset>
+<legend>I am 18 or over and would like to participate.</legend>
+<input type="text" name="workerId" placeholder="Worker ID *" required>
+</fieldset>
+<p>(You must enter your Mechanical Turk Worker ID in order for us to pay you.)</p>
+
+<input type="hidden" name="assignmentId" value="{{ request.args.get('assignmentId') }}">
+
+<input type="submit" value="Get Started!" />
+</form>
+<script>
+$("#workerIDForm").validate();
+</script>
+</div>
+</body>
+</html>

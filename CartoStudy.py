@@ -56,11 +56,11 @@ def log(ev, info):
     path = 'logs/%s.log' % (os.getpid())
     tokens = [
         str(time.time()),
-        request.args.get('assignmentId', 'None'),
+        request.args.get('workerId', 'None'),
         request.url,
         ev,
+        json.dumps(info),
         json.dumps(list(request.args.items(multi=True))),
-        json.dumps(info)
     ]
     with open(path, 'a') as f:
         f.write('\t'.join(tokens) + '\n')
@@ -75,25 +75,97 @@ NUM_MAPS = 5
 NUM_CHOICES = 10
 
 def myRedirect(func, **args):
-    if request.args.get('assignmentId'):
-        args['assignmentId'] = request.args.get('assignmentId')
+    if request.args.get('workerId'):
+        args['workerId'] = request.args.get('workerId')
     if request.args.get('seenMovies'):
         args['seenMovies'] = request.args.getlist('seenMovies')
     return redirect(url_for(func.__name__, **args))
 
 
-@app.route('/consent/preview')
-def consentPreview():
-    log('page', 'consent/preview')
-    return render_template('consentPreview.html')
+def testGetOptions():
+    for i in range(100):
+        for j in range(20):
+            workerId = str(random.randint(1, 10000000))
+            all = list(MOVIES)
+            random.shuffle(all)
+            seen = all[:j]
 
+            opts = getOptions(workerId, seen)
+            assert(len(opts) == NUM_CHOICES + 2)
+            assert(len(opts) == len(set(opts)))
+            for v in VERIFICATION:
+                assert(v in opts)
+
+            unseen = set(opts) - set(seen) - set(VERIFICATION)
+            if unseen:
+                assert(len(unseen) + len(seen) == NUM_CHOICES)
+
+            opts2 = getOptions(workerId, seen)
+
+            assert(opts == opts2)
+
+
+def getOptions(workerId=None, seenMovies=None):
+    if workerId is None:
+        workerId = request.args.get('workerId')
+    if seenMovies is None:
+        seenMovies = request.args.getlist('seenMovies')
+
+    # Ensure things are deterministic
+    random.seed(workerId + '_options')
+
+    # Gets the list of movie options for the given user
+    # Remove verification movies (these are managed independently)
+    options = sorted(seenMovies)
+    for m in VERIFICATION:
+        if m in options:
+            options.remove(m)
+
+    # Add movies to the seen list if necessary..
+    all = list(MOVIES)
+    random.shuffle(all)
+    while len(options) < NUM_CHOICES:
+        if all[0] not in options:
+            options.append(all[0])
+        del(all[0])
+
+    # Truncate and add verifications
+    random.shuffle(options)
+    options = options[:NUM_CHOICES] + VERIFICATION
+
+    return sorted(options)
+
+
+def getMaps(workerId=None, seenMovies=None):
+    # Start with shown options
+    options = getOptions(workerId, seenMovies)
+
+    if workerId is None:
+        workerId = request.args.get('workerId')
+
+    # Ensure things are deterministic
+    random.seed(workerId + '_maps')
+    random.shuffle(options)
+
+    # Remove verification movies (these are managed independently)
+    for m in VERIFICATION:
+        options.remove(m)
+
+    maps = [ ('verification/' + m + '.png') for m in VERIFICATION ]
+
+    for m in options[:NUM_MAPS]:
+        maps.append('content/cartoScreenshots-' + m + '.png')
+        maps.append('nav/cartoScreenshots-' + m + '.png')
+
+    assert(len(maps) == NUM_MAPS * 2 + 2)
+
+    random.shuffle(maps)
+
+    return maps
 
 @app.route('/')
 def index():
-    if request.args.get('assignmentId', ''):
-        return myRedirect(consentShow)
-    else:
-        return myRedirect(consentPreview)
+    return myRedirect(consentShow)
 
 
 @app.route('/consent/show')
@@ -104,95 +176,77 @@ def consentShow():
 
 @app.route('/consent/save')
 def consentSave():
-    assert(request.args.get('assignmentId', ''))
+    assert(request.args.get('workerId', ''))
     log('page', 'consent/save')
     return myRedirect(bioShow)
 
 
 @app.route('/bio/show')
 def bioShow():
-    assert(request.args.get('assignmentId', ''))
+    assert(request.args.get('workerId', ''))
     log('page', 'bio/show')
     return render_template('biographicaldata.html', movies=sorted(MOVIES + VERIFICATION))
 
 
 @app.route('/bio/save')
 def bioSave():
-    assert(request.args.get('assignmentId', ''))
+    assert(request.args.get('workerId', ''))
     log('page', 'bio/save')
     return myRedirect(instructions)
 
 
 @app.route('/instructions/show')
 def instructions():
-    assert(request.args.get('assignmentId', ''))
+    assert(request.args.get('workerId', ''))
     log('page', 'instructions/show')
     return render_template('instructions.html')
-
-
-def getOptions():
-    # Ensure things are deterministic
-    random.seed(request.args.get('assignmentId') + '_movies')
-
-    # Gets the list of movie options for the given user
-    # Remove verification movies (these are managed independently)
-    options = sorted(request.args.getlist('seenMovies'))
-    for m in VERIFICATION:
-        options.remove(m)
-
-    # Add movies to the seen list if necessary..
-    all = list(MOVIES)
-    random.shuffle(all)
-    while len(options) < 10:
-        if all[0] not in options:
-            options.append(all[0])
-        del(all[0])
-
-    # Truncate and add verifications
-    options = options[:10] + VERIFICATION
-
-    random.shuffle(options)
-
-    return options
-
-
-def getMaps():
-
-    # Start with shown options
-    options = getOptions()
-
-    # Ensure things are deterministic
-    random.seed(request.args.get('assignmentId') + '_maps')
-
-    # Remove verification movies (these are managed independently)
-    for m in VERIFICATION:
-        options.remove(m)
-
-    maps = [
-        'verification/Rocky II.png',
-        'verification/The Lord of the Rings: The Fellowship of the Ring.png',
-    ]
-    for m in options[:5]:
-        maps.append('content/cartoScreenshots-' + m + '.png')
-        maps.append('nav/cartoScreenshots-' + m + '.png')
-
-
-    random.shuffle(options)
-
-    return options
 
 
 
 @app.route('/map/show/<int:questionNum>')
 def mapShow(questionNum):
-    assert(request.args.get('assignmentId', ''))
+    assert(request.args.get('workerId', ''))
+    maps = getMaps()
+    options = getOptions()
+
     log('page', 'map/show/' + str(questionNum))
-    return render_template('instructions.html')
+    return render_template('map.html',
+                           totalMaps=(NUM_MAPS*2 + 2),
+                           questionNum=questionNum,
+                           options=options,
+                           map=maps[questionNum])
 
 
-@app.route('/map/save')
-def mapSave():
-    pass
+@app.route('/map/save/<int:questionNum>')
+def mapSave(questionNum):
+    assert(request.args.get('workerId', ''))
+    maps = getMaps()
+    options = getOptions()
+    log('map',{ 'map' : maps[questionNum],
+                'num' : questionNum,
+                'first' : request.args.get('firstchoice', ''),
+                'second' : request.args.get('secondchoice', ''),
+                'third' : request.args.get('thirdchoice', ''),
+                })
+
+    if questionNum + 1 >= NUM_MAPS * 2 + 2:
+        return myRedirect(thanksShow)
+    else:
+        return myRedirect(mapShow, questionNum=questionNum+1)
+
+
+@app.route('/thanks/show')
+def thanksShow():
+    code = str(random.randint(10000000000, 99999999999))
+    log('page', 'thanks/show')
+    log('code', code)
+    return render_template('thanks.html', code=code)
+
+@app.route('/thanks/save')
+def thanksSaved():
+    code = request.args.get('code')
+    log('page', 'thanks/save')
+    return render_template('thanks_saved.html', code=code)
 
 
 @app.url_defaults

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Cartograph Survey Instructions</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js" integrity="sha256-UOSXsAgYN43P/oVrmU+JlHtiDGYWN2iHnJuKY9WD+Jg=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+<div class="cartograph">
+
+<h1>Thank you!</h1>
+<p>
+    Thanks for participating in our study!
+    Your completion code is <b>{{  code }}</b>.
+    Please return to the original HIT and enter this code.
+</p>
+
+<p>
+    If you have any comments, please leave them below:
+</p>
+
+<form id="commentForm" action="save">
+    <textarea name="comments" rows="20" cols="80">&nbsp;</textarea>
+    <input type="hidden" name="code" value="{{ code }}"/>
+    <input type="submit" value="Save comments" />
+</form>
+
+    <p>Please contact Shilad Sen (ssen@macalester.edu) with any additional questions or feedback.</p>
+</div>
+</body>
+</html>

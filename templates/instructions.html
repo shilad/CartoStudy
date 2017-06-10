@@ -38,9 +38,9 @@
     <b>Some movie choices may be used for more than one map and others choices may not be used at all.</b></p>
 
 
-<form id="instructionForm" action="../map/show">
+<form id="instructionForm" action="../map/show/0">
 
-<input type="hidden" name="assignmentId" value="{{ request.args.get('assignmentId') }}">
+<input type="hidden" name="workerId" value="{{ request.args.get('workerId') }}">
 
 {% for m in request.args.getlist('seenMovies') %}
 <input type="hidden" name="seenMovies" value="{{ m }}">
